@@ -1,12 +1,17 @@
 import * as http from 'http';
 
-const hostname = '127.0.0.1';
-const port = 8080;
+const port = process.env.PING_LISTEN_PORT ? parseInt(process.env.PING_LISTEN_PORT) : 8000;
 
 const server = http.createServer((req, res) => {
-    res.write('Hello, World!\n'); 
-    res.end();
+    if (req.method === 'GET' && req.url === '/ping') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(req.headers, null, 2));
+    } else {
+        res.writeHead(404);
+        res.end();
+    }
 });
-server.listen(port, hostname, () => {
-    console.log(`http://${hostname}:${port}/`);
+
+server.listen(port, () => {
+    console.log(`Serveur en écoute sur le port ${port}`);
 });
